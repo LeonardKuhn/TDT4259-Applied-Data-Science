@@ -5,6 +5,8 @@ df = pd.read_csv("./consumption_temp.csv")
 df['time'] = pd.to_datetime(df['time'])
 df.set_index('time', inplace=True)
 
+correlation = df['temperature'].corr(df['consumption'])
+
 # grouped = df.groupby('location')
 
 def plot_overview(df, city):
@@ -97,6 +99,7 @@ def plot_consumption_and_temperature(df,location):
     ax2.plot(mean_data.index, mean_data['temperature'], color = "blue")
     ax1.grid(axis='y')
     ax2.grid(axis='y')
+    plt.text(1, 1.1, f"Correlation between Temperature and Consumption: {correlation:.2f}", horizontalalignment='right', verticalalignment='center', transform=ax1.transAxes)
     ax2.xaxis.set_visible(False)
     ax1.set_ylabel('Consumption')
     ax2.set_ylabel('Temperature')
