@@ -78,10 +78,10 @@ def plot_overview(df, city):
     plt.close()
 
 def plot_consumption_and_temperature(df,location):
-    fig, axes = plt.subplots(nrows=1, figsize=(10, 6))
+    fig, axes = plt.subplots(nrows=2, figsize=(10, 6), sharex=True)
 
-    ax1 = axes
-    ax2 = ax1.twinx()  # Create a secondary y-axis
+    ax1 = axes[1]
+    ax2 = axes[0]  # Create a secondary y-axis
 
     # Filter data for the current location
     df = df[df['location'] == location]
@@ -95,18 +95,20 @@ def plot_consumption_and_temperature(df,location):
 
     ax1.plot(mean_data.index, mean_data['consumption'], color = "green")
     ax2.plot(mean_data.index, mean_data['temperature'], color = "blue")
-    ax1.set_title(f'Consumption vs Temperature of {mean_data.index[0].month_name()} {mean_data.index[0].year} in {location}')
-    ax1.grid(True)
-    ax1.set_ylabel('Consumption', color='green')
-    ax2.set_ylabel('Temperature', color='blue')
+    ax1.grid(axis='y')
+    ax2.grid(axis='y')
+    ax2.xaxis.set_visible(False)
+    ax1.set_ylabel('Consumption')
+    ax2.set_ylabel('Temperature')
     ax1.set_xlabel('Day of the Month')
     ax1.xaxis.set_ticks(mean_data.index)
     ax1.xaxis.set_ticklabels(mean_data.index.day)
 
     # Adjust the layout
+    plt.suptitle(f'Consumption vs Temperature of {mean_data.index[0].month_name()} {mean_data.index[0].year} in {location}')
     plt.tight_layout()
     plt.savefig(f"temp_cons_{location}.png", dpi=200)
     plt.close()
 
-plot_overview(df, 'oslo')
+# plot_overview(df, 'oslo')
 plot_consumption_and_temperature(df, 'oslo')
