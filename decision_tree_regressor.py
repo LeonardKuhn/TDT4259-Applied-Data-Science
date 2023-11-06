@@ -25,7 +25,7 @@ y = data['consumption']
 X = data[['year', 'month', 'day', 'hour', 'day_of_week', 'temperature', 'Location_bergen', 'Location_oslo', 'Location_stavanger', 'Location_tromsø', 'Location_trondheim']]
 
 # Split data: Training and testing sets (80% training, 20% testing)
-forecast_date = datetime(2023, 9, 19)
+forecast_date = datetime(2023, 3, 18)
 # Historical data limitation: 5 days
 historical_data_end_date = forecast_date - timedelta(days=5)
 train_data = data[data['time'] <= historical_data_end_date]
@@ -38,7 +38,7 @@ aneo_model = DecisionTreeRegressor(random_state=1)
 aneo_model.fit(X_train, y_train)
 
 # Predict consumption values for the specified date and time
-start_date = datetime(2023, 9, 18)
+start_date = datetime(2023, 3, 17)
 end_date = forecast_date
 date_range = [start_date + timedelta(hours=i) for i in range((end_date - start_date).days * 24)]
 
@@ -58,7 +58,7 @@ for date in date_range:
         'Location_oslo': [0],
         'Location_stavanger': [0],
         'Location_tromsø': [0],
-        'Location_trondheim': [0]
+        'Location_trondheim': [0]   
     }
 
     predicted_consumption_val = aneo_model.predict(pd.DataFrame(input_features))
@@ -73,12 +73,14 @@ def datetime_to_str(date):
     return date.strftime('%Y/%m/%d')
 
 date_labels = [date.strftime('%Y-%m-%d %H:%M') for date in date_range]
+time_labels = [date.strftime('%H:%M') for date in date_range]
 
 # Predicted consumption values
-plt.figure(figsize=(12, 4))
+plt.figure(figsize=(14, 5))
 plt.plot(date_labels, predicted_consumption, marker=',', linestyle='-')
 plt.title(f'''Bergen: {datetime_to_str(start_date)} - {datetime_to_str(end_date)}''')
 plt.ylabel('Consumption (MW)')
 plt.grid(False)
-plt.xticks(rotation=45)
+plt.xticks(range(len(date_range)), time_labels, rotation=45)
+plt.subplots_adjust(left=0.1) 
 plt.show()
