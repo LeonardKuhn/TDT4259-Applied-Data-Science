@@ -19,6 +19,7 @@ data['month'] = data['time'].dt.month
 data['day'] = data['time'].dt.day
 data['hour'] = data['time'].dt.hour
 data['day_of_week'] = data['time'].dt.dayofweek
+data['temperature'] = data['temperature'].astype(int)
 
 # One-hot encoding for location (turns categorical data into numerical data)
 data = pd.get_dummies(data, columns=['location'], prefix=['Location'])
@@ -50,18 +51,20 @@ predicted_consumption = []
 
 # Input features for the specified date and time
 for date in date_range:
+    temperatureLastFiveDays = data[data['time'] <= date]['temperature'].tail(5).mean()
+
     input_features = {
         'year': [date.year],
         'month': [date.month],
         'day': [date.day],
         'hour': [date.hour],
         'day_of_week': [date.weekday()],
-        'temperature': [15],  
+        'temperature': [temperatureLastFiveDays],  
         # Choose the location by having 1 for the location and 0 for the rest
-        'Location_bergen': [1],
+        'Location_bergen': [0],
         'Location_oslo': [0],
         'Location_stavanger': [0],
-        'Location_tromsø': [0],
+        'Location_tromsø': [1],
         'Location_trondheim': [0]   
     }
 
@@ -87,7 +90,7 @@ time_labels = [date.strftime('%H:%M') for date in date_range]
 # Predicted consumption values
 plt.figure(figsize=(14, 5))
 plt.plot(date_labels, predicted_consumption, marker=',', linestyle='-')
-plt.title(f'''Bergen: {datetime_to_str(start_date)} - {datetime_to_str(end_date)}''')
+plt.title(f'''Tromsø: {datetime_to_str(start_date)} - {datetime_to_str(end_date)}''')
 plt.ylabel('Consumption (MW)')
 plt.grid(False)
 plt.xticks(range(len(date_range)), time_labels, rotation=45)
